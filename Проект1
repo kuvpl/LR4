@@ -53,12 +53,12 @@ public class Parser_2 {
             }
         }
         
-        while (!operators.isEmpty()) {
-            char op = operators.pop();
-            double b = values.pop();
-            double a = values.pop();
-            values.push(applyOperation(a, b, op));
-        }
+       while (!operators.isEmpty() && operators.peek() != '(' && priority(operators.peek()) >= priority(ch)) {
+    char op = operators.pop();
+    double b = values.pop();
+    double a = values.pop();
+    values.push(applyOperation(a, b, op));
+}
         
         return values.pop();
     }
