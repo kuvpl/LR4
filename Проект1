@@ -1,0 +1,103 @@
+package util.variant_5;
+
+import java.util.Stack;
+
+public class Parser_2 {
+    
+    /**
+     * Метод должен раскрывать скобки и вычислять выражение.
+     * Пример: "2*(3+4)" -> 14
+     * 
+     * ОШИБКА: неправильно обрабатываются вложенные скобки
+     */
+    public static double openBracketsAndCalculateExpression(String expression) {
+        expression = expression.replaceAll("\\s+", "");
+        
+        Stack<Double> values = new Stack<>();
+        Stack<Character> operators = new Stack<>();
+        
+        for (int i = 0; i < expression.length(); i++) {
+            char ch = expression.charAt(i);
+            
+            if (Character.isDigit(ch) || ch == '.') {
+                StringBuilder sb = new StringBuilder();
+                while (i < expression.length() && (Character.isDigit(expression.charAt(i)) || expression.charAt(i) == '.')) {
+                    sb.append(expression.charAt(i));
+                    i++;
+                }
+                i--;
+                values.push(Double.parseDouble(sb.toString()));
+            }
+            else if (ch == '(') {
+                operators.push(ch);
+            }
+            else if (ch == ')') {
+                // ОШИБКА ЗДЕСЬ: при закрытии скобки обрабатывается только один оператор
+                // Должно быть: while (!operators.isEmpty() && operators.peek() != '(')
+                if (!operators.isEmpty() && operators.peek() != '(') {
+                    char op = operators.pop();
+                    double b = values.pop();
+                    double a = values.pop();
+                    values.push(applyOperation(a, b, op));
+                }
+                operators.pop();
+            }
+            else if (isOperator(ch)) {
+                while (!operators.isEmpty() && operators.peek() != '(' && priority(operators.peek()) >= priority(ch)) {
+                    char op = operators.pop();
+                    double b = values.pop();
+                    double a = values.pop();
+                    values.push(applyOperation(a, b, op));
+                }
+                operators.push(ch);
+            }
+        }
+        
+        while (!operators.isEmpty()) {
+            char op = operators.pop();
+            double b = values.pop();
+            double a = values.pop();
+            values.push(applyOperation(a, b, op));
+        }
+        
+        return values.pop();
+    }
+    
+    private static boolean isOperator(char ch) {
+        return ch == '+' || ch == '-' || ch == '*' || ch == '/';
+    }
+    
+    private static int priority(char op) {
+        switch (op) {
+            case '+':
+            case '-':
+                return 1;
+            case '*':
+            case '/':
+                return 2;
+            default:
+                return 0;
+        }
+    }
+    
+    private static double applyOperation(double a, double b, char op) {
+        switch (op) {
+            case '+': return a + b;
+            case '-': return a - b;
+            case '*': return a * b;
+            case '/': return a / b;
+            default: return 0;
+        }
+    }
+    
+    public static void main(String[] args) {
+        System.out.println("Выражение: (2+3+4)*2");
+        System.out.println("Результат: " + openBracketsAndCalculateExpression("(2+3+4)*2"));
+        System.out.println("Ожидается: 18");
+        System.out.println();
+        
+        System.out.println("Выражение: ((2+3)*4)/2");
+        System.out.println("Результат: " + openBracketsAndCalculateExpression("((2+3)*4)/2"));
+        System.out.println("Ожидается: 10");
+    }
+}
