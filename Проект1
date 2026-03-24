@@ -31,14 +31,15 @@ public class Parser_1 {
             else if (ch == '(') {
                 operators.push(ch);
             }
-            else if (ch == ')') {
-                while (!operators.isEmpty() && operators.peek() != '(') {
-                    char op = operators.pop();
-                    double b = values.pop();
-                    double a = values.pop();
-                    values.push(applyOperation(a, b, op));
-                }
-                operators.pop();
+           else if (ch == ')') {
+    while (!operators.isEmpty() && operators.peek() != '(') {
+        char op = operators.pop();
+        double b = values.pop();
+        double a = values.pop();
+        values.push(applyOperation(a, b, op));
+    }
+    operators.pop();
+}
             }
             else if (isOperator(ch)) {
                 // ОШИБКА ЗДЕСЬ: неправильное сравнение приоритетов
